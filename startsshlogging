@@ -1,0 +1,4 @@
+#!/bin/bash
+echo Starting logging to /opt/zooi/walloffail/modules/failedattempts.txt
+nohup journalctl -ft sshd -o cat >>/opt/zooi/walloffail/modules/failedattempts.txt &
+
