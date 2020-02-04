@@ -1,0 +1,33 @@
+#!/bin/bash
+echo Starting full server backup, this will take a while...
+budir=/mnt/stackpieter/hetznerbackups
+echo Backup dir set to $budir
+echo Creating backup archive "var"
+tar -acf $budir/var-backup-$(date -I).tar.xz /var
+echo Done.
+echo
+echo Creating backup archive "etc"
+tar -acf $budir/etc-backup-$(date -I).tar.xz /etc
+echo Done.
+echo
+echo Creating backup archive "ovh"
+tar -acf $budir/ovh-backup-$(date -I).tar.xz /ovh
+echo Done.
+echo
+echo Creating backup archive "usr"
+tar -acf $budir/usr-backup-$(date -I).tar.xz /usr
+echo Done.
+echo 
+echo Creating backup archive "opt"
+tar -acf $budir/opt-backup-$(date -I).tar.xz /opt
+echo Done.
+echo 
+echo Creating backup archive "home"
+tar -acf $budir/home-backup-$(date -I).tar.xz /home
+echo Done.
+echo Creating backup archive "root"
+tar -acf $budir/root-backup-$(date -I).tar.xz /root
+echo Done.
+echo
+echo
+echo Finished.
