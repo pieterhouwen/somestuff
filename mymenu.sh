@@ -1,36 +1,94 @@
 #!/bin/bash
 
+# if 'brew doctor' returns non-zero you fucked up
+#
+# if brew doctor >dev/null; then
+# echo command went succesfully, no faults found!
+# else
+# echo Brew pkg's not installed properly!
+# fi
+# dpkg -V = verify
+# Nu pacman nog...
+#
+# sudo pacman -Qkk | tee /tmp/tempfile | grep -v '0 altered files'
+# We're only interested in files being changed.
+#
+#
+#
+#
+##########################
+#                        #
+# Article I: Definitions #
+#                        #
+##########################
+#
+# Search for package manager and store in variable
+if [[ -f /usr/bin/pacman ]] ; then
+	echo Pacman found!
+	pkgmgr="pacman"
+	pkgupd="pacman -Syy"
+	pkgupg="pacman -Suy"
+	pkgins="pacman -Sy "
+###########################################
+#                                         #
+# Start sorting different pacman distro's #
+#                                         #
+###########################################
+elif [[ -f /usr/bin/apt ]]; then
+	pkgmgr="apt"
+	pkgupd="apt update"
+	pkgupg="apt upgrade -y"
+	pkgins="apt install -y"
+	repodir="/etc/apt"
+	repolist="/etc/apt/sources.list"
+	custrepodir="/etc/apt/sources.list.d"
+elif [[ -f /usr/bin/brew ]]; then
+	pkgmgr="brew"
+	pkgupd="brew update"
+	pkgupg="brew upgrade"
+	pkgins="brew install"
+elif [[ -f /usr/bin/yum ]]; then
+	pkgmgr="yum"
+	pkgupd="yum update"
+	pkgupg="yum upgrade" #Don't know if this is correct?
+	pkgins="yum install"
+else
+	echo Package manager not found!
+	echo Some features of this program will not work.
+	echo
+fi
+#
 ##################################
 #                                #
 # Build a menu building function #
 #                                #
 ##################################
-
+#
 function buildmenu () {
-echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 N=0
 for i in "$@"
 do
 N=$(expr $N + 1)
 echo Option $N is: $i
 done
-echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
+echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 echo
 echo Please select your choice:
 }
-
+#
 ##########################
 #                        #
 # Define our main menu.  #
 #                        #
 ##########################
-
+#
 function mainmenu () {
 while true
 	do
 		# PS3="Please choose an option "
 		# Populate it with options, maybe we should write something to dynamically edit these options.
-		buildmenu network system user quit
+		buildmenu "Network settings" "System settings" "Recovery settings" "User settings" Quit
 		read optMain
 			case $optMain in
 				1)
@@ -38,66 +96,91 @@ while true
 				2)
 					systemmenu ;;
 				3)
+					recoverymenu ;;
+				3)
 					usermenu ;;
 				4)
 					exit 0
 			esac
 	done
 }
-
-
+#
+#
 #########################
 #                       #
 # Define our submenu's. #
 #                       #
 #########################
-
-
+#
+#
 function networkmenu () {
 # Setup menu options for Network
-select optNet in iptables "Back to main menu"
-do
-	case $optNet in
-		iptables)
-			iptablesmenu ;;
-		"Back to main menu")
-			mainmenu ;;
-	esac
-done
+while true
+	do
+	buildmenu IPtables "Back to main menu"
+	read optNet
+		case $optNet in
+			1)
+				iptablesmenu ;;
+			2)
+				mainmenu ;;
+		esac
+	done
 }
-
+#
 function systemmenu () {
 while true
 	do
 	# Setup menu options for System
-	buildmenu "View crontab" "Update system" "Start task manager" "Add executable as service" "Back to main menu"
+	buildmenu "View crontab" "Update system" "Reset/repair pacman" "Add executable as service" "Back to main menu"
 	read optSystem
 			case $optSystem in
-				"1")
-	# Make viewcron.sh do something here
-					:
+				1)
+					echo Who are you interested in viewing the cron?
+					read cronuser
+					bash modules/viewcron.sh -u $cronuser
 					;;
-				"2")
+				2)
 					echo Updating repositories....
-					pacman -Syy
+					$pkgupd
 					echo Starting full system upgrade....
-					pacman -Suy
+					$pkgupg
 					;;
-				"3")
-					htop
+				3)
+					echo Checking internal package manager database...
 					;;
-				"4")
+				4)
 					echo Please enter the full path of the executable to be turned into a service.
 					read file
-					bash $(pwd)/modules/makeservice.sh $file
+					bash modules/makeservice.sh $file
 					;;
-				"5")
+				5)
 					mainmenu
 					;;
 			esac
 	done
 }
-
+#
+function recoverymenu () {
+while true
+	do
+	buildmenu "Reset/repair package repositories" "Check integrity of installed packages" "Back to main menu"
+	read optRecovery
+		case $optRecovery in
+			1)
+				repodir="/etc/apt"
+				custrepodir="/etc/apt/sources.list.d"
+				;;
+			2)
+				:
+				;;
+			3)
+				mainmenu 
+				;;
+		esac
+	done
+}
+#
 function usermenu () {
 while true
 	do
@@ -109,17 +192,18 @@ while true
 			2)
 				echo Your homefolder is $(du -hd 1 ~ | tail -n 1 | cut -f 1) big. ;;
 			3)
-				break ;;
+				mainmenu ;;
 		esac
 	done
 }
-
+#
 function iptablesmenu () {
-buildmenu "List IPtables chains" "Forward a port on the local system" "Main menu"
+while true
+	do
+	buildmenu "List IPtables chains" "Forward a port on the local system" "Main menu"
 	read optIptables
-		do
-			case $optIptables in
-				1)
+		case $optIptables in
+			1)
 					echo The current IPtables chains are:
 					iptables -L | grep -i chains
 					;;
@@ -141,6 +225,12 @@ buildmenu "List IPtables chains" "Forward a port on the local system" "Main menu
 			esac
 		done
 }
-
-
+#
+#
+# We should find out which package manager the user is using.
+# First let's start with apt because apt
+#
+#
+#
 mainmenu
+#
