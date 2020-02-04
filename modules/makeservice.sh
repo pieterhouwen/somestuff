@@ -10,11 +10,11 @@ echo Usage: $0 \[ /path/to/executable \]
 echo Create a service out of an executable.
 }
 
-if [ -z "$1" ]; then # start if, check if arg = null
+if [ -z "$1" ]; then # If no arguments are given, stop with exit code 1, else resume normal operation.
 helper
 exit 1
-else
-  if [ -x $1 ]; then
+else 
+if [ -x $1 ]; then
     echo Give me a Description
     read servicedesc
     echo Great, now give me some args (leave blank for none)
