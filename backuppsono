@@ -1,0 +1,6 @@
+#!/bin/bash
+MOUNT=/mnt/stackpieter/psono-backups
+tar -acf backup-psono-$(date -I).tar.gz /opt/docker/psono
+mv backup-psono-$(date -I).tar.gz $MOUNT/
+echo Backup file /mnt/stackpieter/psono-backups/psono-backup-$(date -I).tar.gz has been created!
+
