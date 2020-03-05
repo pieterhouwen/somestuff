@@ -1,0 +1,61 @@
+#!/bin/bash
+# Check filesystem size
+function RTFM () {
+ printf "Usage: 	$0 -f [filesystem] -t [threshold]\n\n"
+ printf "Filesystem: 	Filesystem to monitor\n"
+ printf "Threshold: 	Disk space threshold before alert, use percentage points\n"
+}
+
+# Let's check if all arguments were given.
+
+if [ $# == "0" ]; then
+ RTFM
+ exit 1
+elif [ $# -lt "4" ]; then
+ echo Not enough arguments given! Please RTFM.
+ RTFM
+ exit 1
+else
+ :
+fi
+
+
+
+
+
+while getopts "f:t:" args
+ do
+ case $args in
+  f)
+    if df -h | grep $OPTARG >/dev/null; then
+    fs=$OPTARG
+   else
+    echo Invalid FS! Please RTFM.
+    RTFM
+    exit 1
+   fi
+   ;;
+  t)
+   if [[ $OPTARG -gt 0 ]]; then
+    threshold=$OPTARG
+   else
+    echo Invalid threshold! Please RTFM.
+    RTFM
+    exit 1
+   fi
+   ;;
+  *)
+    echo Invalid options! Please RTFM.
+    RTFM
+    exit 1
+    ;;
+   esac
+ done
+
+avail=$(df -h --output=pcent $fs | grep -v Use | sed 's/\%//g' | cut -d " " -f 2)
+if [[ $avail -gt $threshold ]]; then
+echo Disk space of $fs over threshold of $threshold!
+else
+: # Do nothing
+fi
+
