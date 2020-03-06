@@ -15,6 +15,10 @@ elif [ $# -lt "4" ]; then
  echo Not enough arguments given! Please RTFM.
  RTFM
  exit 1
+elif [ $# -gt "4" ]; then
+ echo Too many arguments! Please RTFM.
+ RTFM
+ exit 1
 else
  :
 fi
