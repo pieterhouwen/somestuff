@@ -5,21 +5,21 @@ exit 1
 fi
 
 #Usecase var
-function helper() {
+function RTFM() {
 echo Usage: $0 \[ /path/to/executable \]
 echo Create a service out of an executable.
 }
 
 if [ -z "$1" ]; then # If no arguments are given, stop with exit code 1, else resume normal operation.
-helper
-exit 1
-else 
-if [ -x $1 ]; then
-    echo Give me a Description
-    read servicedesc
-    echo Great, now give me some args (leave blank for none)
-    read args
-    cat << EOF >/tmp/service.service
+ RTFM
+ exit 1
+else
+ if [ -x $1 ]; then
+     echo Give me a Description
+     read servicedesc
+     echo Great, now give me some args (leave blank for none)
+     read args
+     cat << EOF >/tmp/service.service
 [Unit]
 Description=$servicedesc
 After=network.target
@@ -42,9 +42,10 @@ EOF
     read enableboot
     if [ $enableboot == "Y" ] || [ $enableboot == "y" ]; then
     systemctl enable $servicename
-  else
+    else
     systemctl start $servicename
+    fi
   else
     echo $1 does not exist or is not executable!
     exit 1
-  fi
+fi
