@@ -1,0 +1,2 @@
+#!/bin/bash
+# This program will symlink the individual modules so they can be run seperately from the command line
