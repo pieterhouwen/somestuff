@@ -4,18 +4,21 @@ function RTFM () {
  printf "Usage: 	$0 -f [filesystem] -t [threshold]\n\n"
  printf "Filesystem: 	Filesystem to monitor\n"
  printf "Threshold: 	Disk space threshold before alert, use percentage points\n"
+ printf "Monitor:	Send alert to sysadmin@pieterhouwen.info when treshold is reached\n"
 }
+
+notify=0
 
 # Let's check if all arguments were given.
 
 if [ $# == "0" ]; then
  RTFM
  exit 1
-elif [ $# -lt "4" ]; then
+elif [ $# -lt "5" ]; then
  echo Not enough arguments given! Please RTFM.
  RTFM
  exit 1
-elif [ $# -gt "4" ]; then
+elif [ $# -gt "5" ]; then
  echo Too many arguments! Please RTFM.
  RTFM
  exit 1
@@ -27,7 +30,7 @@ fi
 
 
 
-while getopts "f:t:" args
+while getopts "f:t:m" args
  do
  case $args in
   f)
@@ -48,6 +51,9 @@ while getopts "f:t:" args
     exit 1
    fi
    ;;
+  m)
+   notify=1
+   ;;
   *)
     echo Invalid options! Please RTFM.
     RTFM
@@ -58,7 +64,18 @@ while getopts "f:t:" args
 
 avail=$(df -h --output=pcent $fs | grep -v Use | sed 's/\%//g' | cut -d " " -f 2)
 if [[ $avail -gt $threshold ]]; then
-echo Disk space of $fs over threshold of $threshold!
+ echo Disk space of $fs over threshold of $threshold!
+ echo Current level is at $avail
+  if [ $notify == 1 ]; then
+sendmail -f diskdaemon@pwmanager.pieterhouwen.info -t sysadmin@pieterhouwen.info <<EOF
+From: Disk Daemon <diskdaemon@pwmanager.pieterhouwen.info>
+Subject: Disk space alert!
+Disk space of $fs over threshold of $threshold!
+Current level is at $avail
+EOF
+else
+:
+fi
 else
 : # Do nothing
 fi
