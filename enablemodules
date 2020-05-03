@@ -1,20 +1,37 @@
 #!/bin/bash
 # This program will symlink the individual modules so they can be run seperately from the command line
+
+# First let's check the privileges.
+
+if [[ $(id -u) -gt "0" ]]; then
+ echo This program probably should be run as root.
+ exit 1
+else
+ :
+fi
+
+function installmod() {
+ if [ -e /usr/bin/$1 ]; then
+  echo $1 already exists, skipping...
+ else
+  ln -s $(pwd)/modules/$1 /usr/bin/$1
+  echo $1 has been installed.
+ fi
+}
+
 echo This program will symlink the modules.
 echo Continue? \[Y\/N\]
-read confirm
-case $confirm in
-Y|y)
-ln -s $(pwd)/modules/complete-destroy-pkg /usr/bin/complete-destroy-pkg
-echo Symlinked complete-destroy-pkg.
-ln -s $(pwd)/modules/diskchecker /usr/bin/diskchecker
-echo Symlinked diskchecker
-ln -s $(pwd)/modules/makeservice /usr/bin/makeservice
-echo Symlinked makeservice
-ln -s $(pwd)/modules/viewcron /usr/bin/viewcron
-echo Symlinked viewcron
-echo
-echo Done!
+ read confirm
+ case $confirm in
+  Y|y)
+   installmod complete-destroy-pkg
+   installmod diskchecker
+   installmod makeservice
+   installmod viewcron
+   echo
+   echo Done symlinking stuff.
+   echo
+   echo Also install bashrc mods?
 exit 0
 ;;
 *)
