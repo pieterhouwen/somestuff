@@ -1,0 +1,54 @@
+#!/bin/bash
+function RTFM() {
+ printf "Usage: 	$0: -f [certfile] -s [summary] -e [expiry] -b [bitlength] \n"
+ printf "\n"
+ printf "Certfile:	Specify your certificate file. This should be a certificate, not a key.\n"
+ printf "Summary:	Print a summary of useful details of specified certificate.\n"
+ printf "Expiration:	Print certificate expiry date.\n"
+ printf "Bitlength:	Print certificate bitlength.\n"
+}
+
+if [ $# -lt 1 ]; then
+ RTFM
+ exit 1
+else
+ :
+fi
+
+if [[ -e $1 ]]; then
+ # Looks like our cert exists
+ certfile=$1
+else
+ echo Cert does not exist, check the name and try again!
+exit 1
+fi
+
+while getopts "fseb" args
+ do
+  case $args in
+   f)
+    certfile=$OPTARG
+    if [[ -n $certfile && -f $certfile && -r $certfile ]]; then
+     :
+    else
+     echo Cert does not exist or is not readable!
+     RTFM
+     exit 1
+    fi
+    ;;
+   s)
+     echo Cert set to $certfile
+     openssl x509 -in $certfile -text -noout
+     ;;
+   e)
+    openssl x509 -enddate -noout -in $certfile
+    ;;
+   b)
+    openssl x509 -in $certfile -text -noout | grep "Public-key"
+    ;;
+   *)
+    echo Invalid options!
+    RTFM
+    ;;
+  esac
+ done
