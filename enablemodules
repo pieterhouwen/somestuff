@@ -28,13 +28,12 @@ echo Continue? \[Y\/N\]
    installmod diskchecker
    installmod makeservice
    installmod viewcron
+   installmod checkcert
    echo
    echo Done symlinking stuff.
-   echo
-   echo Also install bashrc mods?
-exit 0
-;;
-*)
-exit 1
-;;
-esac
+  exit 0
+  ;;
+ *)
+  exit 1
+  ;;
+ esac
