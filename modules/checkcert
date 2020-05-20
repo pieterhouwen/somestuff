@@ -15,15 +15,15 @@ else
  :
 fi
 
-if [[ -e $1 ]]; then
+#if [[ -e $1 ]]; then
  # Looks like our cert exists
- certfile=$1
-else
- echo Cert does not exist, check the name and try again!
-exit 1
-fi
+# certfile=$1
+#else
+# echo Cert does not exist, check the name and try again!
+#exit 1
+#fi
 
-while getopts "fseb" args
+while getopts "f:seb" args
  do
   case $args in
    f)
@@ -44,7 +44,7 @@ while getopts "fseb" args
     openssl x509 -enddate -noout -in $certfile
     ;;
    b)
-    openssl x509 -in $certfile -text -noout | grep "Public-key"
+    openssl x509 -in $certfile -text -noout | grep "bit"
     ;;
    *)
     echo Invalid options!
@@ -52,3 +52,12 @@ while getopts "fseb" args
     ;;
   esac
  done
+
+# Check if argument has been given
+if [[ "x" == x$certfile ]]; then
+ echo Manditory option "-f" not given! Quitting!
+ exit 1
+else
+ :
+fi
+
