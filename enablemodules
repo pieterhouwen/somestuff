@@ -24,6 +24,7 @@ echo Continue? \[Y\/N\]
  read confirm
  case $confirm in
   Y|y)
+   echo
    installmod complete-destroy-pkg
    installmod diskchecker
    installmod makeservice
