@@ -25,6 +25,8 @@ echo Continue? \[Y\/N\]
  case $confirm in
   Y|y)
    echo
+   echo Enabling global "checkroot" alias...
+   printf "alias checkrt='if [[ $(id -u) -ne 0 ]] ; then echo Please run as root ; exit 1 ; fi'" >>/etc/bash.bashrc && source /etc/bash.bashrc
    installmod complete-destroy-pkg
    installmod diskchecker
    installmod makeservice

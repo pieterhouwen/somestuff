@@ -62,7 +62,8 @@ while getopts "f:t:m" args
    esac
  done
 
-avail=$(df -h --output=pcent $fs | grep -v Use | sed 's/\%//g' | cut -d " " -f 2)
+# Update 30-05-2020 apperantly this has to be changed to keep working
+avail=$(df -h --output=pcent $fs | grep -v Use | sed 's/\%//g')
 if [[ $avail -gt $threshold ]]; then
  echo Disk space of $fs over threshold of $threshold!
  echo Current level is at $avail
