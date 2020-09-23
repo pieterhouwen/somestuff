@@ -70,7 +70,6 @@ server {
         #       deny all;
         #}
 }
-}
 EOF
 }
 
@@ -135,13 +134,14 @@ server {
         #       deny all;
         #}
 }
-}
 EOF
+}
+
 
 
 function writeapacheconf() {
   cat <<EOF
-  <VirtualHost *:80>
+  <VirtualHost $domain:80>
         # The ServerName directive sets the request scheme, hostname and port that
         # the server uses to identify itself. This is used when creating
         # redirection URLs. In the context of virtual hosts, the ServerName
@@ -177,7 +177,10 @@ webdir=
 usessl=
 
 # This program really should be run as root...
-checkroot
+if [[ $(id -u) -gt 0 ]]; then
+	echo Please run as root!
+	exit 1
+fi
 
 while getopts "nah:d:s" args
  do
@@ -192,15 +195,15 @@ while getopts "nah:d:s" args
         fi
     ;;
     a)
-        if [[ -n $webserver ]]; then
+    	if [[ -n $webserver ]]; then
           echo Please use either -n or -a !
           echo
           exit 1
         else
           webserver=apache
-        fi
-      ;;
-      h)
+     	fi
+    ;;
+    h)
           if [[ $OPTARG == "" ]]; then
             echo Please provide a domainname!
             echo
@@ -208,22 +211,23 @@ while getopts "nah:d:s" args
           else
             domain=$OPTARG
           fi
-      ;;
-      d)
+    ;;
+    d)
         webdir=$OPTARG
         if [[ ! -d $webdir ]]; then
           printf "$webdir doesn't seem to exist, creating it for you.\n"
           mkdir -p $webdir
         fi
-      ;;
-      s)
+    ;;
+    s)
         usessl=true
-      *)
+    ;;
+    *)
         RTFM
         exit 1
-      ;;
+    ;;
     esac
-  done
+done
 
 # Check if args are given
 if [[ "x" == "x$webdir" ]]; then
@@ -260,11 +264,11 @@ if [[ $webserver == "apache" ]]; then
           else
             :
           fi
-      else pacman -Syy apache2
+      	else pacman -Syy apache2
           mkdir /etc/apache2/sites-available 2>&1 1>/dev/null
           mkdir /etc/apache2/sites-enabled 2>&1 1>/dev/null
         fi
-      fi
+    fi
         if [[ -e /usr/bin/apt ]]; then
           if [[ -d /etc/apache2 ]] ; then
             :
@@ -273,88 +277,88 @@ if [[ $webserver == "apache" ]]; then
             sleep 2
             echo Updating apt
             echo
-            apt-get update >/dev/null
+            apt-get update -qq
             echo Installing apache2
             echo
-            apt-get install apache2 -y -q
+            apt-get install apache2 -y -qq
             echo Done.
           fi
         fi
-	  echo Removing default configuration files...
-	  rm -f /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/000-default.conf 2>/dev/null
-	  echo Writing apache configuration file for $domain.
-	  writeapacheconf >/etc/apache2/sites-available/$domain.conf
-	  echo Creating symlinks.
-	  ln -s /etc/apache2/sites-available/$domain.conf /etc/apache2/sites-enabled/$domain.conf
-	  echo Done
-	  echo
-	fi
-
+	echo Removing default configuration files...
+	rm -f /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/default-ssl.conf /etc/apache2/sites-enabled/000-default.conf 2>/dev/null
+	echo Writing apache configuration file for $domain.
+	writeapacheconf >/etc/apache2/sites-available/$domain.conf
+	echo Creating symlinks.
+	ln -s /etc/apache2/sites-available/$domain.conf /etc/apache2/sites-enabled/$domain.conf
+	echo Done
+	echo
+fi
 if [[ $usessl == "true" ]]; then
 	if [[ -e /usr/bin/apt ]]; then
-	 if dpkg --get-selections | grep certbot >/dev/null; then
-	  # Certbot is installed, let's make use of it. 
-          # if
-         else
- 	  echo Installing certbot-auto using apt
-          apt-get update -q; apt-get install certbot certbot-apache certbot-nginx
-         fi
+		if dpkg --get-selections | grep certbot >/dev/null; then
+			# Certbot is installed, let's make use of it.
+       		certbot --apache
+      	else
+ 	        echo Installing certbot using apt
+        	echo Updating apt repositories
+        	apt update -qq
+        	echo Installing software-properties-common
+        	apt install software-properties-common -y -qq
+        	echo Adding apt repositories
+         	add-apt-repository universe
+         	add-apt-repository ppa:certbot/certbot
+            echo Installing certbot
+            apt install certbot python3-certbot-$webserver -y -qq
+            certbot --apache
         fi
-        if [[ -e /usr/bin/pacman ]]; then
-         if pacman -Q certbot; then
-          # Pacman found certbot, use it.
-         else
-          pacman -S certbot certbot-nginx certbot-apache
-         fi
-        fi
-
-      ;;
-if [[ $webserver == "nginx" ]]; then
- if [[ -e /usr/bin/pacman ]]; then
-  if pacman -Q nginx; then
-   # nginx has been installed, make directories for the virtualhosts, this will fail if dirs are already present but that's okay.
-   mkdir /etc/nginx/sites-available 2>&1 1>/dev/null
-   mkdir /etc/nginx/sites-enabled 2>&1 1>/dev/null
-   # Check if the servername (domain) is already in the nginx.conf files
-   if grep "server_name $domain" /etc/nginx.conf ; then
-    echo $domain already present in conf file! Quitting!
-    exit 1
-   fi
-  else pacman -Syy nginx
-        mkdir /etc/nginx/sites-available 2>&1 1>/dev/null
-        mkdir /etc/nginx/sites-enabled 2>&1 1>/dev/null
-  fi
- fi
-  if [[ -e /usr/bin/apt ]]; then
-   if [[ -d /etc/nginx ]]; then
-          :
-        else
-          echo Nginx not installed, installing now.
-          sleep 2
-          echo Updating apt
-          echo
-          apt-get update >/dev/null
-          echo Installing nginx
-          echo
-          apt-get install nginx -y -q
-          echo Done.
-        fi
-      fi
-      if [[ -n $webserver ]]; then
-        echo Please use either -n or -a !
-        echo
-        exit 1
     fi
+    if [[ -e /usr/bin/pacman ]]; then
+    	if pacman -Q certbot; then
+        	certbot --$webserver
+        else
+        	pacman -S certbot certbot-$webserver
+        	certbot --$webserver 
+        fi
+   	fi
+fi 	
+if [[ $webserver == "nginx" ]]; then
+	if [[ -e /usr/bin/pacman ]]; then
+		if pacman -Q nginx; then
+		    # nginx has been installed, make directories for the virtualhosts, this will fail if dirs are already present but that's okay.
+		    mkdir /etc/nginx/sites-available 2>&1 1>/dev/null
+		    mkdir /etc/nginx/sites-enabled 2>&1 1>/dev/null
+    		# Check if the servername (domain) is already in the nginx.conf files
+    		if grep "server_name $domain" /etc/nginx/sites-*/*.conf ; then
+    			echo $domain already present in conf file! Quitting!
+    			exit 1
+    		fi
+  		else 
+  			pacman -Syy nginx
+   			mkdir /etc/nginx/sites-available 2>&1 1>/dev/null
+    		mkdir /etc/nginx/sites-enabled 2>&1 1>/dev/null
+    	fi
+	fi
+  	if [[ -e /usr/bin/apt ]]; then
+   		if [[ -d /etc/nginx ]]; then
+           :
+    	else
+        	echo Nginx not installed, installing now.
+        	sleep 2
+        	echo Updating apt
+        	echo
+        	apt-get update -qq
+        	echo Installing nginx
+        	echo
+        	apt install nginx -y -qq
+        	echo Done.
+    	fi
+	fi
+fi
  #   	writenginxsslconf >>/etc/nginx/nginx.conf
  #   	writenginxsslconf >/etc/nginx/sites-available/$domain.conf
-    else
-	  writenginxconf >>/etc/nginx/nginx.conf
+# else
 	  writenginxconf >/etc/nginx/sites-available/$domain.conf
-	fi
-  ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
-fi
+	  ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
 if [[ $usessl == "true" ]]; then
-	certbot --certonly $webserver
+	certbot --$webserver
 fi
-
-
