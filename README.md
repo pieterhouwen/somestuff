@@ -11,9 +11,10 @@ Adds a virtual host to either nginx or apache2 and optionally secures with SSL.
 
 Gives a summary of most commonly checked options, such as:
 
-- Expiry date 
-- Bitlenght (strength of certificate)
-- Just a long list of details
+-Expiry date 
+-Bitlenght (strength of certificate)
+-Just a long list of details
+
 * Complete destroy pkg
 
 Completely removes a package from Arch Linux and optionally also its dependencies
