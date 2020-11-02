@@ -38,7 +38,7 @@ EOF
     echo Service file has been written to /tmp/service.service
     echo What would you like to name it \(for use with systemctl\)?
     read servicename
-    mv /tmp/service.service /usr/lib/systemd/system/$servicename
+    mv /tmp/service.service /usr/lib/systemd/system/$servicename.service
     echo Enable at boot time? Y/N
     read enableboot
     if [ $enableboot == "Y" ] || [ $enableboot == "y" ]; then
