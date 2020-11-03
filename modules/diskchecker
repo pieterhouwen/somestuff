@@ -14,7 +14,7 @@ notify=0
 if [ $# == "0" ]; then
  RTFM
  exit 1
-elif [ $# -lt "5" ]; then
+elif [ $# -lt "4" ]; then
  echo Not enough arguments given! Please RTFM.
  RTFM
  exit 1
@@ -80,4 +80,3 @@ EOF
 else
  : # Do nothing
 fi
-
