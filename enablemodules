@@ -26,7 +26,7 @@ echo Continue? \[Y\/N\]
   Y|y)
    echo
    echo Enabling global "checkroot" alias...
-   if [[ grep checkroot /etc/bash.bashrc ]]; then
+   if grep checkroot /etc/bash.bashrc >/dev/null; then
    echo Checkroot already present, skipping...
    else
    printf "alias checkroot='if [[ $(id -u) -gt 0 ]] ; then echo Please run as root ; exit 1 ; fi'" >>/etc/bash.bashrc && source /etc/bash.bashrc
