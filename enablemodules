@@ -29,7 +29,8 @@ echo Continue? \[Y\/N\]
    if grep checkroot /etc/bash.bashrc >/dev/null; then
    echo Checkroot already present, skipping...
    else
-   printf "alias checkroot='if [[ \$(id -u) -gt 0 ]] ; then echo Please run as root ; exit 1 ; fi'\n" >>/etc/bash.bashrc && source /etc/bash.bashrc
+   printf "alias checkroot='if [[ \$(id -u) -gt 0 ]] ; then echo Please run as root ; exit 1 ; fi'\n" >>/etc/bash.bashrc
+   source /etc/bash.bashrc
    echo Enabled checkroot alias
    fi
    installmod complete-destroy-pkg
