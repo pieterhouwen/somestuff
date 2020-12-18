@@ -15,6 +15,11 @@ RTFM
 exit
 fi
 
+case $1 in
+     /*) : ;; # If executable is preceeded by a slash, the path is absolute
+     *) echo Please use an absolute path! ; exit 1 ;;
+esac
+
 if [ -x $1 ]; then
      echo Give me a Description
      read servicedesc
