@@ -1,0 +1,65 @@
+#!/bin/bash
+# This script will turn a .crt and .key file into a .pfx file
+
+function RTFM() {
+printf "Usage: $0 -c \[certfile\] -k \[keyfile\] -o \[outfile\]\n"
+printf "\n"
+exit 1
+}
+
+while getopts "c:k:o:" args 2&>/dev/null
+  do
+    case $args in
+    	c)
+        certfile=$OPTARG
+        ;;
+      k)
+        keyfile=$OPTARG
+        ;;
+      o)
+        outfile=$OPTARG
+        ;;
+      *)
+        echo Invalid usage of $OPTARG
+        exit 1
+        ;;
+    esac
+  done
+
+# Check if args are given
+if [[ "c" == "c$certfile" ]]; then
+  echo Please provide a certfile!
+  exit 1
+fi
+if [[ "k" == "k$keyfile" ]]; then
+  echo Please provide a keyfile!
+  exit 1
+fi
+if [[ "i" == "i$outfile" ]]; then
+  echo Please provide a outfile!
+  exit 1
+fi
+
+# Check if required files exist
+if [[ ! -e $certfile ]]; then
+  echo Certfile not found!
+  exit 1
+fi
+if [[ ! -e $keyfile ]]; then
+  echo Keyfile not found!
+  exit 1
+fi
+
+# Check if keyfile and certfile are valid
+if ! head -n 1 $keyfile | grep PRIVATE >/dev/null; then
+  echo $keyfile doesn\'t look like a private key to me...
+  exit 1
+fi
+if ! head -n 1 $certfile | grep CERTIFICATE >/dev/null; then
+  echo $certfile doesn\'t look like a certificate to me...
+  exit 1
+fi
+
+# Well if we've come this far then I guess it's time to actually do some work
+openssl pkcs12 -export -out $outfile -inkey $keyfile -in $certfile
+echo Written to $outfile
