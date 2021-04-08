@@ -6,7 +6,8 @@ printf " -n		Use NGINX as webserver\n"
 printf " -a		Use APACHE as webserver\n"
 printf " -h		Hostname/domainname to add\n"
 printf " -d		Directory of web files\n"
-printf " -s		Use SSL\n\n"
+printf " -s		Use SSL\n"
+printf " -l   Use localhost proxy\n"
 }
 
 function writenginxconf () {
@@ -297,7 +298,7 @@ if [[ $usessl == "true" ]]; then
 	if [[ -e /usr/bin/apt ]]; then
 		if dpkg --get-selections | grep certbot >/dev/null; then
 			# Certbot is installed, let's make use of it.
-       		certbot --apache
+       		certbot --$webserver
       	else
  	        echo Installing certbot using apt
         	echo Updating apt repositories
@@ -309,7 +310,7 @@ if [[ $usessl == "true" ]]; then
          	add-apt-repository ppa:certbot/certbot
             echo Installing certbot
             apt install certbot python3-certbot-$webserver -y -qq
-            certbot --apache
+            certbot --$webserver
         fi
     fi
     if [[ -e /usr/bin/pacman ]]; then
@@ -317,10 +318,10 @@ if [[ $usessl == "true" ]]; then
         	certbot --$webserver
         else
         	pacman -S certbot certbot-$webserver
-        	certbot --$webserver 
+        	certbot --$webserver
         fi
    	fi
-fi 	
+fi
 if [[ $webserver == "nginx" ]]; then
 	if [[ -e /usr/bin/pacman ]]; then
 		if pacman -Q nginx; then
@@ -332,7 +333,7 @@ if [[ $webserver == "nginx" ]]; then
     			echo $domain already present in conf file! Quitting!
     			exit 1
     		fi
-  		else 
+  		else
   			pacman -Syy nginx
    			mkdir /etc/nginx/sites-available 2>&1 1>/dev/null
     		mkdir /etc/nginx/sites-enabled 2>&1 1>/dev/null
@@ -359,6 +360,3 @@ fi
 # else
 	  writenginxconf >/etc/nginx/sites-available/$domain.conf
 	  ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
-if [[ $usessl == "true" ]]; then
-	certbot --$webserver
-fi
