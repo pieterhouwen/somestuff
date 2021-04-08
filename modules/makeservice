@@ -12,7 +12,7 @@ echo Create a service out of an executable.
 
 if [[ $# -lt "1" ]]; then
 RTFM
-exit
+exit 1
 fi
 
 case $1 in
