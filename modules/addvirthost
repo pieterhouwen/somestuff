@@ -10,6 +10,10 @@ printf " -s		Use SSL\n"
 printf " -l   Use localhost proxy\n"
 }
 
+#########################################
+#        Declare our functions          #
+#########################################
+
 function writenginxconf () {
 cat <<EOF
 # Default server configuration
@@ -137,8 +141,6 @@ server {
 }
 EOF
 }
-
-
 
 function writeapacheconf() {
   cat <<EOF
@@ -354,9 +356,9 @@ if [[ $webserver == "nginx" ]]; then
         	echo Done.
     	fi
 	fi
+  writenginxconf >/etc/nginx/sites-available/$domain.conf
+  ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
 fi
  #   	writenginxsslconf >>/etc/nginx/nginx.conf
  #   	writenginxsslconf >/etc/nginx/sites-available/$domain.conf
 # else
-	  writenginxconf >/etc/nginx/sites-available/$domain.conf
-	  ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
