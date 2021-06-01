@@ -173,11 +173,26 @@ function writeapacheconf() {
 EOF
 }
 
+# Function also puts config file in correct destination
+function writenginxlocal() {
+writenginxconf >/tmp/tempconf
+sed -i "s/\# proxy_pass http://localhost:8080\;/proxy_pass http://localhost:$port\;/g" /tmp/tempconf
+sed -i "s/\# proxy_http_version 1.1\;/proxy_http_version 1.1\;/g" /tmp/tempconf
+sed -i "s/\# proxy_set_header Upgrade \$http_upgrade\;/proxy_set_header Upgrade \$http_upgrade\;/g" /tmp/tempconf
+sed -i "s/\# proxy_set_header Connection 'upgrade'\;proxy_set_header Connection 'upgrade\;/g" /tmp/tempconf
+sed -i "s/\# proxy_set_header Host \$host\;/proxy_set_header Host \$host;/g" /tmp/tempconf
+sed -i "s/\# proxy_cache_bypass \$http_upgrade\;/proxy_cache_bypass \$http_upgrade\;/g" /tmp/tempconf
+mv /tmp/tempconf /etc/nginx/sites-available/$domain.conf
+ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
+}
+
+
 # Initialise the variables
 webserver=
 domain=
 webdir=
 usessl=
+port=
 
 # This program really should be run as root...
 if [[ $(id -u) -gt 0 ]]; then
@@ -225,6 +240,14 @@ while getopts "nah:d:s" args
     s)
         usessl=true
     ;;
+    l)
+      if [[ $OPTARG == "" ]]; then
+        Please provide a port!
+        exit 1
+      else
+        port=$OPTARG
+      fi
+    ;;
     *)
         RTFM
         exit 1
@@ -250,6 +273,14 @@ if [[ "w" == "w$webserver" ]]; then
   echo
   RTFM
   exit 1
+fi
+
+# Localhost port redirection is only supported on nginx ATM.
+# Exit if port has been given in combination with webserver=apache
+if [[ $webserver == "apache2"]] && [[ $port -ne "" ]]; then
+  echo Port redirection only supported on nginx!
+  exit 1
+
 fi
 
 # Let's begin
@@ -358,6 +389,9 @@ if [[ $webserver == "nginx" ]]; then
 	fi
   writenginxconf >/etc/nginx/sites-available/$domain.conf
   ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
+elif [[ $port -ne "" ]]; then
+  writenginxlocal
+  mv -f /tmp/tempconf /etc/nginx/sites-available/$domain.conf
 fi
  #   	writenginxsslconf >>/etc/nginx/nginx.conf
  #   	writenginxsslconf >/etc/nginx/sites-available/$domain.conf
