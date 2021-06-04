@@ -306,6 +306,9 @@ while getopts "nah:d:sl:" args
       if [[ $OPTARG == "" ]]; then
         Please provide a port!
         exit 1
+      elif [[ ! $OPTARG -eq $OPTARG ]]; then
+        echo Please provide a number!
+        exit 1
       else
         port=$OPTARG
       fi
@@ -463,4 +466,3 @@ fi
  #   	writenginxsslconf >/etc/nginx/sites-available/$domain.conf
 # else
 fi
-
