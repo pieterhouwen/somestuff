@@ -144,7 +144,7 @@ EOF
 
 function writeapacheconf() {
   cat <<EOF
-  <VirtualHost $domain:80>
+  <VirtualHost *:80>
         # The ServerName directive sets the request scheme, hostname and port that
         # the server uses to identify itself. This is used when creating
         # redirection URLs. In the context of virtual hosts, the ServerName
@@ -175,7 +175,7 @@ EOF
 
 function writeapachelocal() {
   cat <<EOF
-  <VirtualHost $domain:80>
+  <VirtualHost *:80>
         # The ServerName directive sets the request scheme, hostname and port that
         # the server uses to identify itself. This is used when creating
         # redirection URLs. In the context of virtual hosts, the ServerName
