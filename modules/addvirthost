@@ -1,6 +1,6 @@
 #!/bin/bash
 function RTFM() {
-printf " Usage:	        $0 -n [NGINX] -a [APACHE] -h [host to add] -d [directory] -s [SSL]"
+printf " Usage:	        $0 -n [NGINX] -a [APACHE] -h [host to add] -d [directory] -s [SSL] -l [port]"
 printf " \n"
 printf " -n             Use NGINX as webserver\n"
 printf " -a             Use APACHE as webserver\n"
@@ -206,17 +206,6 @@ function writeapachelocal() {
 EOF
 }
 
-# Function also puts config file in correct destination
-# function writenginxlocal() {
-#sed -i "s/\# proxy_pass http://localhost:8080\;/proxy_pass http://localhost:$port\;/g" /etc/nginx/sites-available/$domain.conf
-#sed -i "s/\# proxy_http_version 1.1\;/proxy_http_version 1.1\;/g" /etc/nginx/sites-available/$domain.conf
-#sed -i "s/\# proxy_set_header Upgrade \$http_upgrade\;/proxy_set_header Upgrade \$http_upgrade\;/g" /etc/nginx/sites-available/$domain.conf
-#sed -i "s/\# proxy_set_header Connection 'upgrade'\;proxy_set_header Connection 'upgrade\;/g" /etc/nginx/sites-available/$domain.conf
-#sed -i "s/\# proxy_set_header Host \$host\;/proxy_set_header Host \$host;/g" /etc/nginx/sites-available/$domain.conf
-#sed -i "s/\# proxy_cache_bypass \$http_upgrade\;/proxy_cache_bypass \$http_upgrade\;/g" /etc/nginx/sites-available/$domain.conf
-#}
-
-
 # Initialise the variables
 webserver=
 domain=
@@ -307,13 +296,6 @@ if [[ "w" == "w$webserver" ]]; then
   RTFM
   exit 1
 fi
-
-# Localhost port redirection is only supported on nginx ATM.
-# Exit if port has been given in combination with webserver=apache
-#if [[ $webserver == "apache2" ]] && [[ $port -ne "" ]]; then
-#  echo Port redirection only supported on nginx!
-#  exit 1
-#fi
 
 # Let's begin
 if [[ $webserver == "apache" ]]; then
@@ -444,10 +426,5 @@ if [[ $webserver == "nginx" ]]; then
     writenginxconf >/etc/nginx/sites-available/$domain.conf
     ln -s /etc/nginx/sites-enabled/$domain.conf /etc/nginx/sites-available/$domain.conf
     systemctl restart nginx
-# echo port was $port
-#  mv -f /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-available/$domain.conf
-fi
- #   	writenginxsslconf >>/etc/nginx/nginx.conf
- #   	writenginxsslconf >/etc/nginx/sites-available/$domain.conf
-# else
+  fi
 fi

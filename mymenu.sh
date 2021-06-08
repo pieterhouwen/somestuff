@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # if 'brew doctor' returns non-zero you fucked up
-#
+
 # if brew doctor >dev/null; then
 # echo command went succesfully, no faults found!
 # else
@@ -9,19 +9,16 @@
 # fi
 # dpkg -V = verify
 # Nu pacman nog...
-#
+
 # sudo pacman -Qkk | tee /tmp/tempfile | grep -v '0 altered files'
 # We're only interested in files being changed.
-#
-#
-#
-#
+
 ##########################
 #                        #
 # Article I: Definitions #
 #                        #
 ##########################
-#
+
 # Search for package manager and store in variable
 if [[ -f /usr/bin/pacman ]] ; then
 	echo Pacman found!
@@ -29,11 +26,13 @@ if [[ -f /usr/bin/pacman ]] ; then
 	pkgupd="pacman -Syy"
 	pkgupg="pacman -Suy"
 	pkgins="pacman -Sy "
+
 ###########################################
 #                                         #
 # Start sorting different pacman distro's #
 #                                         #
 ###########################################
+
 elif [[ -f /usr/bin/apt ]]; then
 	pkgmgr="apt"
 	pkgupd="apt update"
@@ -50,20 +49,20 @@ elif [[ -f /usr/bin/brew ]]; then
 elif [[ -f /usr/bin/yum ]]; then
 	pkgmgr="yum"
 	pkgupd="yum update"
-	pkgupg="yum upgrade" #Don't know if this is correct?
+	# pkgupg="yum upgrade" #Don't know if this is correct?
 	pkgins="yum install"
 else
 	echo Package manager not found!
 	echo Some features of this program will not work.
 	echo
 fi
-#
+
 ##################################
 #                                #
 # Build a menu building function #
 #                                #
 ##################################
-#
+
 function buildmenu () {
 echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 N=0
@@ -76,13 +75,13 @@ echo \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 echo
 echo Please select your choice:
 }
-#
+
 ##########################
 #                        #
 # Define our main menu.  #
 #                        #
 ##########################
-#
+
 function mainmenu () {
 while true
 	do
@@ -104,30 +103,30 @@ while true
 			esac
 	done
 }
-#
-#
+
 #########################
 #                       #
 # Define our submenu's. #
 #                       #
 #########################
-#
-#
+
 function networkmenu () {
 # Setup menu options for Network
 while true
 	do
-	buildmenu IPtables "Back to main menu"
+	buildmenu IPtables "Add virtualhost" "Back to main menu"
 	read optNet
 		case $optNet in
 			1)
 				iptablesmenu ;;
 			2)
+				virthostmenu ;;
+			3)
 				mainmenu ;;
 		esac
 	done
 }
-#
+
 function systemmenu () {
 while true
 	do
@@ -160,7 +159,7 @@ while true
 			esac
 	done
 }
-#
+
 function recoverymenu () {
 while true
 	do
@@ -175,12 +174,12 @@ while true
 				:
 				;;
 			3)
-				mainmenu 
+				mainmenu
 				;;
 		esac
 	done
 }
-#
+
 function usermenu () {
 while true
 	do
@@ -196,7 +195,7 @@ while true
 		esac
 	done
 }
-#
+
 function iptablesmenu () {
 while true
 	do
@@ -225,12 +224,26 @@ while true
 			esac
 		done
 }
-#
-#
+
+function virthostmenu () {
+	while true
+	do
+		buildmenu "Add virtualhost to Apache" "Add virtualhost to nginx" "Back to main menu"
+		read optVirthost
+			case $optVirthost in
+				1)
+					read 
+				;;
+				2)
+
+				;;
+				3)
+
+				mainmenu
+				;;
+	done
+}
 # We should find out which package manager the user is using.
 # First let's start with apt because apt
-#
-#
-#
+
 mainmenu
-#
