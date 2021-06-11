@@ -13,9 +13,6 @@
 # sudo pacman -Qkk | tee /tmp/tempfile | grep -v '0 altered files'
 # We're only interested in files being changed.
 
-
-
-
 ##########################
 #                        #
 # Article I: Definitions #
@@ -29,18 +26,18 @@ if [[ -f /usr/bin/pacman ]] ; then
 	pkgupd="pacman -Syy"
 	pkgupg="pacman -Suy"
 	pkgins="pacman -Sy "
-	pkgsrc="pacman -Q "
+
 ###########################################
 #                                         #
 # Start sorting different pacman distro's #
 #                                         #
 ###########################################
+
 elif [[ -f /usr/bin/apt ]]; then
 	pkgmgr="apt"
 	pkgupd="apt update"
 	pkgupg="apt upgrade -y"
 	pkgins="apt install -y"
-	pkgsrc="dpkg --get-selections | grep "
 	repodir="/etc/apt"
 	repolist="/etc/apt/sources.list"
 	custrepodir="/etc/apt/sources.list.d"
@@ -107,25 +104,23 @@ while true
 	done
 }
 
-
 #########################
 #                       #
 # Define our submenu's. #
 #                       #
 #########################
 
-
 function networkmenu () {
 # Setup menu options for Network
 while true
 	do
-	buildmenu IPtables "Add virtual host to apache or nginx" "Back to main menu"
+	buildmenu IPtables "Add virtualhost" "Back to main menu"
 	read optNet
 		case $optNet in
 			1)
 				iptablesmenu ;;
 			2)
-				addvirthostmenu ;;
+				virthostmenu ;;
 			3)
 				mainmenu ;;
 		esac
@@ -230,30 +225,25 @@ while true
 		done
 }
 
-function addvirthostmenu () {
-while true
+function virthostmenu () {
+	while true
 	do
-	buildmenu "Add Apache virtualhost" "Add nginx virtualhost" "Back to main menu"
-	read optAddvirthost
-		case $optAddvirthost in
-			1)
-				if [[ ! -d /etc/apache2 ]]; then
-					echo Apache doesn't seem installed, installing it now.
-					$pkginst apache2
-				fi
-				echo What hostname would you like to add? Please use a FQDN.
-				read hostname
-				echo Hostname set to $hostname
-				if grep -ir "servername $hostname" /etc/apache2 >/dev/null; then
-					echo Looks like you already have a virtualhost called ${hostname}, quitting!!
-					exit 1
-				fi
-				
+		buildmenu "Add virtualhost to Apache" "Add virtualhost to nginx" "Back to main menu"
+		read optVirthost
+			case $optVirthost in
+				1)
+					read 
+				;;
+				2)
 
+				;;
+				3)
+
+				mainmenu
+				;;
+	done
+}
 # We should find out which package manager the user is using.
 # First let's start with apt because apt
 
-#
-
 mainmenu
-
