@@ -39,6 +39,7 @@ echo Continue? \[Y\/N\]
    installmod viewcron
    installmod checkcert
 	 installmod unpfx
+   installmod makepfx
    installmod addvirthost
    echo
    echo Done symlinking stuff.
