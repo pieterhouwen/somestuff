@@ -232,7 +232,24 @@ function virthostmenu () {
 		read optVirthost
 			case $optVirthost in
 				1)
-					read 
+					read "Enter desired FQDN hostname: " hostname
+					read -p "Enable localhost redirection [Y/N]?" optLocalhost
+					case $optLocalhost in
+						Y|y)
+							read -p "Port: " port
+							read -p "Obtain SSL cert using Certbot? [Y/N]" ssl
+							case word in
+								pattern )
+									;;
+							esac
+							;;
+						N|n)
+							read -p "Where are the files stored?" webdir
+							if [[ ! -d $webdir  ]]; then
+								echo $webdir doesn\'t seem to exist, creating it for you
+								mkdir -p $webdir
+							fi
+					esac
 				;;
 				2)
 
