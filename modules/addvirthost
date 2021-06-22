@@ -278,7 +278,7 @@ while getopts "nah:d:sl:" args
 done
 
 # Check if args are given
-if [[ "x" == "x$webdir" ]]; then
+if [[ "x" == "x$webdir" && $port -ne "" ]]; then
   echo Webdirectory not specified! Exiting!
   echo
   RTFM
