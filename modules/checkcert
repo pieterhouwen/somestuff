@@ -1,11 +1,11 @@
 #!/bin/bash
 function RTFM() {
- printf "Usage: 	$0: -f [certfile] -s [summary] -e [expiry] -b [bitlength] \n"
+ printf " Usage:	$0: -f [certfile] -s [summary] -e [expiry] -b [bitlength] \n"
  printf "\n"
- printf "Certfile:	Specify your certificate file. This should be a certificate, not a key.\n"
- printf "Summary:	Print a summary of useful details of specified certificate.\n"
- printf "Expiration:	Print certificate expiry date.\n"
- printf "Bitlength:	Print certificate bitlength.\n"
+ printf ' -c       Specify your certificate file. This should be a certificate, not a key.\n'
+ printf ' -s       Print a summary of useful details of specified certificate.\n'
+ printf ' -e       Print certificate expiry date.\n'
+ printf ' -b       Print certificate bitlength.\n'
 }
 
 if [ $# -lt 1 ]; then
@@ -60,4 +60,3 @@ if [[ "x" == x$certfile ]]; then
 else
  :
 fi
-
