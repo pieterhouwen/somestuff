@@ -58,12 +58,5 @@ done
 #echo $(kutzooiarr[*])
 
 
-# ${gg}_A${num} 
+# ${gg}_A${num}
 # Run Command at 13 37 on friday every month
-
-
-
-
-
-
-

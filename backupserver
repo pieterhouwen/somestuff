@@ -17,11 +17,11 @@ echo
 echo Creating backup archive "usr"
 tar -acf $budir/usr-backup-$(date -I).tar.xz /usr
 echo Done.
-echo 
+echo
 echo Creating backup archive "opt"
 tar -acf $budir/opt-backup-$(date -I).tar.xz /opt
 echo Done.
-echo 
+echo
 echo Creating backup archive "home"
 tar -acf $budir/home-backup-$(date -I).tar.xz /home
 echo Done.

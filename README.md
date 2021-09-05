@@ -7,11 +7,13 @@ Some of my personal scripts
 
 Adds a virtual host to either nginx or apache2 and optionally secures with SSL.
 
+Usage:
+
 * Checkcert
 
 Gives a summary of most commonly checked options, such as:
 
-Expiry date 
+Expiry date
 
 Bitlenght (strength of certificate)
 
