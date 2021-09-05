@@ -14,7 +14,7 @@ printf " -l             Use localhost proxy\n"
 #        Declare our functions          #
 #########################################
 
-function writenginxconf () {
+function writenginxconf() {
 cat <<EOF
 # Default server configuration
 #
@@ -78,7 +78,7 @@ server {
 EOF
 }
 
-function writenginxlocal () {
+function writenginxlocal() {
 cat <<EOF
 # Default server configuration
 #
