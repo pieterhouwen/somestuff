@@ -424,7 +424,7 @@ if [[ $webserver == "nginx" ]]; then
   	exit
 	else
     writenginxconf >/etc/nginx/sites-available/$domain.conf
-    ln -s /etc/nginx/sites-enabled/$domain.conf /etc/nginx/sites-available/$domain.conf
+    ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$domain.conf
     systemctl restart nginx
   fi
 fi
