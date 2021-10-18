@@ -361,6 +361,9 @@ fi
 if [[ $usessl == "true" ]]; then
 	if [[ -e /usr/bin/apt ]]; then
     if [[ -e /usr/bin/snap ]]; then
+      elif [[ -e /usr/bin/certbot ]]
+        certbot --$webserver
+      else
       sudo snap install core
       sudo snap refresh core
       sudo snap install --classic certbot
@@ -369,7 +372,7 @@ if [[ $usessl == "true" ]]; then
       elif	dpkg --get-selections | grep certbot >/dev/null; then
 			# Certbot is installed, let's make use of it.
        		certbot --$webserver
-      	else
+      else
  	        echo Installing certbot using apt
         	echo Updating apt repositories
         	apt update -qq
@@ -381,6 +384,7 @@ if [[ $usessl == "true" ]]; then
           echo Installing certbot
           apt install certbot python3-certbot-$webserver -y -qq
           certbot --$webserver
+        fi
         fi
     fi
     if [[ -e /usr/bin/pacman ]]; then
