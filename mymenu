@@ -238,26 +238,77 @@ function virthostmenu () {
 						Y|y)
 							read -p "Port: " port
 							read -p "Obtain SSL cert using Certbot? [Y/N]" ssl
-							case word in
-								pattern )
+							case $ssl in
+								Y|y)
+										modules/addvirthost -a -h $hostname -l $port -s
+									;;
+									N|n)
+										modules/addvirthost -a -h $hostname -l $port
+										;;
+									*)
+									echo Invalid option!
+									virthostmenu
 									;;
 							esac
 							;;
 						N|n)
 							read -p "Where are the files stored?" webdir
-							if [[ ! -d $webdir  ]]; then
-								echo $webdir doesn\'t seem to exist, creating it for you
-								mkdir -p $webdir
-							fi
+							read -p "Obtain SSL cert using Certbot? [Y/N]" ssl
+							case $ssl in
+								Y|y)
+										modules/addvirthost -a -h $hostname -d $webdir -s
+									;;
+									N|n)
+										modules/addvirthost -a -h $hostname -d $webdir
+										;;
+									*)
+									echo Invalid option!
+									virthostmenu
+									;;
+							esac
 					esac
 				;;
 				2)
-
+				read "Enter desired FQDN hostname: " hostname
+				read -p "Enable localhost redirection [Y/N]?" optLocalhost
+				case $optLocalhost in
+					Y|y)
+						read -p "Port: " port
+						read -p "Obtain SSL cert using Certbot? [Y/N]" ssl
+						case $ssl in
+							Y|y)
+									modules/addvirthost -n -h $hostname -l $port -s
+								;;
+								N|n)
+									modules/addvirthost -n -h $hostname -l $port
+									;;
+								*)
+								echo Invalid option!
+								virthostmenu
+								;;
+						esac
+						;;
+					N|n)
+						read -p "Where are the files stored?" webdir
+						read -p "Obtain SSL cert using Certbot? [Y/N]" ssl
+						case $ssl in
+							Y|y)
+									modules/addvirthost -n -h $hostname -d $webdir -s
+								;;
+								N|n)
+									modules/addvirthost -n -h $hostname -d $webdir
+									;;
+								*)
+								echo Invalid option!
+								virthostmenu
+								;;
+						esac
+				esac
 				;;
 				3)
-
 				mainmenu
 				;;
+			esac
 	done
 }
 # We should find out which package manager the user is using.
