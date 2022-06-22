@@ -301,7 +301,7 @@ fi
 if [[ $webserver == "apache" ]]; then
 	if [[ -e /usr/bin/pacman ]]; then
         if pacman -Q apache2; then
-          # nginx has been installed, make directories for the virtualhosts, this will fail if dirs are already present but that's okay.
+          # Apache has been installed, make directories for the virtualhosts, this will fail if dirs are already present but that's okay.
           mkdir /etc/apache2/sites-available 2>&1 1>/dev/null
           mkdir /etc/apache2/sites-enabled 2>&1 1>/dev/null
           # Check if the servername (domain) is already in the nginx.conf files
@@ -359,42 +359,49 @@ if [[ $webserver == "apache" ]]; then
   fi
 fi
 if [[ $usessl == "true" ]]; then
-	if [[ -e /usr/bin/apt ]]; then
-    if [[ -e /usr/bin/snap ]]; then
-      elif [[ -e /usr/bin/certbot ]]
-        certbot --$webserver
-      else
-      sudo snap install core
-      sudo snap refresh core
-      sudo snap install --classic certbot
-      sudo ln -s /snap/bin/certbot /usr/bin/certbot
-      certbot --$webserver
-      elif	dpkg --get-selections | grep certbot >/dev/null; then
-			# Certbot is installed, let's make use of it.
-       		certbot --$webserver
-      else
- 	        echo Installing certbot using apt
-        	echo Updating apt repositories
-        	apt update -qq
-        	echo Installing software-properties-common
-        	apt install software-properties-common -y -qq
-        	echo Adding apt repositories
-         	add-apt-repository universe
-         	add-apt-repository ppa:certbot/certbot
-          echo Installing certbot
-          apt install certbot python3-certbot-$webserver -y -qq
-          certbot --$webserver
-        fi
-        fi
+  # Check for installation of Certbot package on apt
+  if [[ -e /usr/bin/apt ]]; then
+    if [[ -e /usr/bin/certbot ]]; then
+      :
+    else
+      echo Installing Certbot...
+      sleep 2
+      apt-get install certbot -y -qq
+      echo Done.
     fi
-    if [[ -e /usr/bin/pacman ]]; then
-    	if pacman -Q certbot; then
-        	certbot --$webserver
-        else
-        	pacman -Syy certbot certbot-$webserver
-        	certbot --$webserver
-        fi
-   	fi
+    # Check for installation of Certbot package on pacman
+  elif [[ -e /usr/bin/pacman ]]; then
+    if [[ -e /usr/bin/certbot ]]; then
+      :
+    else
+      echo Installing Certbot...
+      sleep 2
+      pacman -Syy certbot
+      echo Done.
+    fi
+    # Check for installation of Certbot package on yum
+  elif [[ -e /usr/bin/yum ]]; then
+    if [[ -e /usr/bin/certbot ]]; then
+      :
+    else
+      echo Installing Certbot...
+      sleep 2
+      yum install certbot -y -qq
+      echo Done.
+    fi
+    # Check for installation of Certbot package on snap
+  elif [[ -e /usr/bin/snap ]]; then
+    if [[ -e /usr/bin/certbot ]]; then
+      :
+    else
+      echo Installing Certbot...
+      sleep 2
+      snap install certbot
+      echo Done.
+    fi
+    # Certbot is installed, let's make use of it.
+  fi
+  certbot --$webserver
 fi
 if [[ $webserver == "nginx" ]]; then
 	if [[ -e /usr/bin/pacman ]]; then
