@@ -10,7 +10,7 @@ exit 1
 while getopts "c:k:o:" args 2&>/dev/null
   do
     case $args in
-    	c)
+      c)
         certfile=$OPTARG
         ;;
       k)
@@ -29,6 +29,7 @@ while getopts "c:k:o:" args 2&>/dev/null
 # Check if args are given
 if [[ "c" == "c$certfile" ]]; then
   echo Please provide a certfile!
+  echo cert=$certfile
   exit 1
 fi
 if [[ "k" == "k$keyfile" ]]; then
